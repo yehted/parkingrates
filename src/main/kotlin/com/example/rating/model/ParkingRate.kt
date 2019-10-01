@@ -6,8 +6,8 @@ import javax.persistence.*
 
 @Entity
 data class ParkingRate(
-    @OneToMany(cascade = [CascadeType.ALL])
-    val daysOfWeek: List<DayOfWeek>,
+    @OneToMany(mappedBy = "parkingRate", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    var daysOfWeek: List<DayOfWeek>? = null,
     val startTime: LocalTime,
     val endTime: LocalTime,
     val timeZone: ZoneId,

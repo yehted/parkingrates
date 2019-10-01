@@ -4,7 +4,9 @@ import com.example.rating.model.ParkingRate
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface RateRepository : JpaRepository<ParkingRate, Long> {
+}
 
+interface CustomRateRepository {
 }
 
 class InvalidDayOfWeekException(message: String = "Unrecognized day of week"): Exception(message)

@@ -27,6 +27,9 @@ class RatingApplication(
 	}
 }
 
+// TODO(Add endpoint for adding rates)
+// TODO(Use interval tree per day to check for overlap and find rate)
+// TODO(Think about storing as interval tree per day)
 fun main(args: Array<String>) {
 	runApplication<RatingApplication>(*args)
 }
