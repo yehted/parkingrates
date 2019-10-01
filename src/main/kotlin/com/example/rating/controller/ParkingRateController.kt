@@ -1,6 +1,7 @@
 package com.example.rating.controller
 
 import com.example.rating.model.ParkingRate
+import com.example.rating.service.ParkingRateNotFoundException
 import com.example.rating.service.ParkingRateService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -29,11 +30,18 @@ class ParkingRateController(
         )
     }
 
-    @GetMapping("/{day}")
-    fun getByDayOfWeek(@PathVariable day: DayOfWeek): ResponseEntity<List<ParkingRate>> {
+    @GetMapping("/dayOfWeek/{day}")
+    fun getByDayOfWeek(@PathVariable day: String): ResponseEntity<List<ParkingRate>> {
         return ResponseEntity(
-            parkingRateService.getByDayOfWeek(day),
+            parkingRateService.getByDayOfWeek(DayOfWeek.valueOf(day)),
             HttpStatus.OK
+        )
+    }
+
+    @GetMapping("/{id}")
+    fun getById(@PathVariable id: Long): ResponseEntity<ParkingRate> {
+        return ResponseEntity.ok(parkingRateService.getById(id)
+            ?: throw ParkingRateNotFoundException()
         )
     }
 }

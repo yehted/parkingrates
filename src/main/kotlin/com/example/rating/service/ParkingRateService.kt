@@ -5,6 +5,7 @@ import com.example.rating.repository.RateRepository
 import org.springframework.stereotype.Service
 import java.time.DayOfWeek
 import java.time.ZonedDateTime
+import java.util.Optional
 
 @Service
 class ParkingRateService(
@@ -13,6 +14,8 @@ class ParkingRateService(
     fun getAllRates(): List<ParkingRate> {
         return parkingRateRepository.findAll()
     }
+
+    fun getById(id: Long): ParkingRate? = parkingRateRepository.findById(id).orElse(null)
 
     fun getByDayOfWeek(day: DayOfWeek): List<ParkingRate> {
         return parkingRateRepository.findByDaysOfWeekDay(day)
@@ -33,3 +36,5 @@ class ParkingRateService(
             }
     }
 }
+
+class ParkingRateNotFoundException(message: String = "Rate not found"): Exception(message)
