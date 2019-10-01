@@ -1,6 +1,7 @@
 package com.example.rating.controller
 
 import com.example.rating.model.ParkingRate
+import com.example.rating.model.ParkingRateDao
 import com.example.rating.service.ParkingRateNotFoundException
 import com.example.rating.service.ParkingRateService
 import org.springframework.http.HttpStatus
@@ -42,6 +43,15 @@ class ParkingRateController(
     fun getById(@PathVariable id: Long): ResponseEntity<ParkingRate> {
         return ResponseEntity.ok(parkingRateService.getById(id)
             ?: throw ParkingRateNotFoundException()
+        )
+    }
+
+    @PostMapping
+    fun addRates(@RequestBody rateDaos: List<ParkingRateDao>): ResponseEntity<List<ParkingRate>> {
+        val rates = rateDaos.map { it.toEntity() }
+        return ResponseEntity(
+            parkingRateService.addRates(rates),
+            HttpStatus.CREATED
         )
     }
 }

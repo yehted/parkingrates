@@ -5,12 +5,17 @@ import com.example.rating.repository.RateRepository
 import org.springframework.stereotype.Service
 import java.time.DayOfWeek
 import java.time.ZonedDateTime
-import java.util.Optional
 
 @Service
 class ParkingRateService(
     private val parkingRateRepository: RateRepository
 ) {
+    fun addRates(rates: List<ParkingRate>): List<ParkingRate> {
+        return rates.map {
+            parkingRateRepository.save(it)
+        }
+    }
+
     fun getAllRates(): List<ParkingRate> {
         return parkingRateRepository.findAll()
     }
