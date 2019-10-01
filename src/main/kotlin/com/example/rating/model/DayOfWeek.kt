@@ -10,6 +10,7 @@ data class DayOfWeek(
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parking_rate_id")
     var parkingRate: ParkingRate? = null,
+    @Enumerated(EnumType.STRING)
     val day: DayOfWeek,
     @Id @GeneratedValue
     var id: Long = 0
