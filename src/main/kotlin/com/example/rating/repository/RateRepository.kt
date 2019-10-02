@@ -5,10 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.time.DayOfWeek
 
 interface RateRepository : JpaRepository<ParkingRate, Long> {
-    fun findByDaysOfWeekDay(dayOfWeek: DayOfWeek): List<ParkingRate>
-}
-
-interface CustomRateRepository {
+    fun findByWeekDaysDay(dayOfWeek: DayOfWeek): List<ParkingRate>
 }
 
 class InvalidDayOfWeekException(message: String = "Unrecognized day of week"): Exception(message)

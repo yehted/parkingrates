@@ -5,7 +5,7 @@ import java.time.DayOfWeek
 import javax.persistence.*
 
 @Entity
-data class DayOfWeek(
+data class WeekDay(
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parking_rate_id")

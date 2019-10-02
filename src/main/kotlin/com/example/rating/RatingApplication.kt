@@ -23,7 +23,7 @@ class RatingApplication(
 		val rateFile = objectMapper.readValue<RateFile>(file)
         rateFile.rates.map { dao ->
 			repository.save(dao.toEntity().apply {
-				this.daysOfWeek?.forEach {
+				this.weekDays?.forEach {
 					it.parkingRate = this
 				}
 			})

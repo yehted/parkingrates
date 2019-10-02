@@ -11,11 +11,11 @@ class ParkingRateService(
     private val parkingRateRepository: RateRepository
 ) {
     fun addRate(rate: ParkingRate): ParkingRate {
-        val daysOfWeek: List<DayOfWeek> = rate.daysOfWeek?.map { it.day } ?: listOf()
+        val daysOfWeek: List<DayOfWeek> = rate.weekDays?.map { it.day } ?: listOf()
 
         val doesOverlap: Boolean = daysOfWeek
             .flatMap {
-                parkingRateRepository.findByDaysOfWeekDay(it)
+                parkingRateRepository.findByWeekDaysDay(it)
             }
             .any {
                 it.isOverlappingWith(rate) == true
@@ -23,7 +23,7 @@ class ParkingRateService(
 
         return if (!doesOverlap) {
             parkingRateRepository.save(rate.apply {
-                this.daysOfWeek?.forEach {
+                this.weekDays?.forEach {
                     it.parkingRate = this
                 }
             })
@@ -41,7 +41,7 @@ class ParkingRateService(
     fun deleteById(id: Long) = parkingRateRepository.deleteById(id)
 
     fun getByDayOfWeek(day: DayOfWeek): List<ParkingRate> {
-        return parkingRateRepository.findByDaysOfWeekDay(day)
+        return parkingRateRepository.findByWeekDaysDay(day)
     }
 
     fun calculateRate(startTime: ZonedDateTime, endTime: ZonedDateTime): List<ParkingRate> {
@@ -53,7 +53,7 @@ class ParkingRateService(
         }
 
         val dayOfWeek = startTime.dayOfWeek
-        return parkingRateRepository.findByDaysOfWeekDay(dayOfWeek)
+        return parkingRateRepository.findByWeekDaysDay(dayOfWeek)
             .filter {
                 it.isWithinRateWindow(startTime.toLocalTime(), endTime.toLocalTime())
             }

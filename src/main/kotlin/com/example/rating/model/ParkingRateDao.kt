@@ -26,8 +26,8 @@ data class ParkingRateDao(
     fun toEntity(): ParkingRate {
         val times: List<String> = times.split("-")
 
-        val daysOfWeek = days.split(",").map {
-            com.example.rating.model.DayOfWeek(
+        val weekDays: List<WeekDay> = days.split(",").map {
+            WeekDay(
                 day = DAY_OF_WEEK_MAP[it] ?: throw InvalidDayOfWeekException()
             )
         }
@@ -36,7 +36,7 @@ data class ParkingRateDao(
             endTime = LocalTime.of(times.last().slice(0..1).toInt(), times.last().slice(2..3).toInt(), 0),
             timeZone = ZoneId.of(tz),
             price = price,
-            daysOfWeek = daysOfWeek
+            weekDays = weekDays
         )
     }
 
