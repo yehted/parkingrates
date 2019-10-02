@@ -14,4 +14,13 @@ data class ParkingRate(
     val price: Int,
     @Id @GeneratedValue
     var id: Long = 0
-)
+) {
+    fun isWithinRateWindow(start: LocalTime, end: LocalTime): Boolean {
+        return startTime.isBefore(start) && endTime.isAfter(end)
+    }
+
+    fun isOverlappingWith(otherRate: ParkingRate): Boolean? {
+        return (otherRate.startTime.isAfter(startTime) && otherRate.startTime.isBefore(endTime)) ||
+                (otherRate.endTime.isAfter(startTime) && otherRate.endTime.isBefore(endTime))
+    }
+}

@@ -21,13 +21,16 @@ class RatingApplication(
 
 		val file: File = ResourceUtils.getFile("classpath:rates.json")
 		val rateFile = objectMapper.readValue<RateFile>(file)
-        rateFile.rates.map {
-			repository.save(it.toEntity())
+        rateFile.rates.map { dao ->
+			repository.save(dao.toEntity().apply {
+				this.daysOfWeek?.forEach {
+					it.parkingRate = this
+				}
+			})
 		}
 	}
 }
 
-// TODO(Add endpoint for adding rates)
 // TODO(Use interval tree per day to check for overlap and find rate)
 // TODO(Think about storing as interval tree per day)
 fun main(args: Array<String>) {

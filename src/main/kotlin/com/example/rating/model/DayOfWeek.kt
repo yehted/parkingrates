@@ -7,7 +7,7 @@ import javax.persistence.*
 @Entity
 data class DayOfWeek(
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parking_rate_id")
     var parkingRate: ParkingRate? = null,
     @Enumerated(EnumType.STRING)

@@ -16,7 +16,7 @@ class ParkingRateController(
     private val parkingRateService: ParkingRateService
 ) {
     @GetMapping
-    fun getAllRates(@RequestParam startTime: String?, @RequestParam endTime: String?): ResponseEntity<List<ParkingRate>> {
+    fun getAllRates(@RequestParam(required = false) startTime: String?, @RequestParam(required = false) endTime: String?): ResponseEntity<List<ParkingRate>> {
         val rates: List<ParkingRate> = if (startTime != null && endTime != null) {
             val start = ZonedDateTime.parse(startTime)
             val end = ZonedDateTime.parse(endTime)
@@ -48,10 +48,21 @@ class ParkingRateController(
 
     @PostMapping
     fun addRates(@RequestBody rateDaos: List<ParkingRateDao>): ResponseEntity<List<ParkingRate>> {
-        val rates = rateDaos.map { it.toEntity() }
+        val rates: List<ParkingRate> = rateDaos
+            .map { it.toEntity() }
+            .map { parkingRateService.addRate(it) }
+
         return ResponseEntity(
-            parkingRateService.addRates(rates),
+            rates,
             HttpStatus.CREATED
+        )
+    }
+
+    @DeleteMapping("/{id}")
+    fun deleteById(@PathVariable id: Long): ResponseEntity<Unit> {
+        return ResponseEntity(
+            parkingRateService.deleteById(id),
+            HttpStatus.ACCEPTED
         )
     }
 }
