@@ -1,26 +1,32 @@
 package com.example.rating.model
 
-import java.time.LocalTime
-import java.time.ZoneId
+import java.time.OffsetTime
 import javax.persistence.*
 
 @Entity
 data class ParkingRate(
     @OneToMany(mappedBy = "parkingRate", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     var weekDays: List<WeekDay>? = null,
-    val startTime: LocalTime,
-    val endTime: LocalTime,
-    val timeZone: ZoneId,
+    val startTime: OffsetTime,
+    val endTime: OffsetTime,
     val price: Int,
     @Id @GeneratedValue
     var id: Long = 0
 ) {
-    fun isWithinRateWindow(start: LocalTime, end: LocalTime): Boolean {
-        return startTime.isBefore(start) && endTime.isAfter(end)
+    fun isWithinRateWindow(start: OffsetTime, end: OffsetTime): Boolean {
+        return (startTime.isBefore(start) || startTime.isEqual(start)) &&
+                (endTime.isAfter(end) || endTime.isEqual(end))
     }
 
-    fun isOverlappingWith(otherRate: ParkingRate): Boolean? {
-        return (otherRate.startTime.isAfter(startTime) && otherRate.startTime.isBefore(endTime)) ||
-                (otherRate.endTime.isAfter(startTime) && otherRate.endTime.isBefore(endTime))
+    fun isOverlappingTimeWith(otherRate: ParkingRate): Boolean {
+        return (otherRate.startTime.isAfterOrEqual(startTime) && otherRate.startTime.isBeforeOrEqual(endTime)) ||
+                (otherRate.endTime.isAfterOrEqual(startTime) && otherRate.endTime.isBeforeOrEqual(endTime))
+    }
+
+    fun isValid(): Boolean {
+        return startTime.isBefore(endTime)
     }
 }
+
+fun OffsetTime.isAfterOrEqual(other: OffsetTime): Boolean = this.isAfter(other) || this.isEqual(other)
+fun OffsetTime.isBeforeOrEqual(other: OffsetTime): Boolean = this.isBefore(other) || this.isEqual(other)

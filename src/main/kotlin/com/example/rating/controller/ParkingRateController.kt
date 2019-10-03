@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.time.DayOfWeek
-import java.time.ZonedDateTime
 
 @RestController
 @RequestMapping("/rates")
@@ -16,14 +15,8 @@ class ParkingRateController(
     private val parkingRateService: ParkingRateService
 ) {
     @GetMapping
-    fun getAllRates(@RequestParam(required = false) startTime: String?, @RequestParam(required = false) endTime: String?): ResponseEntity<List<ParkingRate>> {
-        val rates: List<ParkingRate> = if (startTime != null && endTime != null) {
-            val start = ZonedDateTime.parse(startTime)
-            val end = ZonedDateTime.parse(endTime)
-            parkingRateService.calculateRate(start, end)
-        } else {
-            parkingRateService.getAllRates()
-        }
+    fun getAllRates(): ResponseEntity<List<ParkingRate>> {
+        val rates: List<ParkingRate> = parkingRateService.getAllRates()
 
         return ResponseEntity(
             rates,

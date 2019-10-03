@@ -1,8 +1,9 @@
 package com.example.rating.model
 
+import java.time.OffsetDateTime
 import java.time.ZonedDateTime
 
 data class RateRequest(
-    val startDate: ZonedDateTime,
-    val endDate: ZonedDateTime
+    val startDate: OffsetDateTime,
+    val endDate: OffsetDateTime
 )

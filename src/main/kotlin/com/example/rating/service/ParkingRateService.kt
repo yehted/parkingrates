@@ -3,7 +3,9 @@ package com.example.rating.service
 import com.example.rating.model.ParkingRate
 import com.example.rating.repository.RateRepository
 import org.springframework.stereotype.Service
+import java.lang.IllegalArgumentException
 import java.time.DayOfWeek
+import java.time.OffsetDateTime
 import java.time.ZonedDateTime
 
 @Service
@@ -11,6 +13,8 @@ class ParkingRateService(
     private val parkingRateRepository: RateRepository
 ) {
     fun addRate(rate: ParkingRate): ParkingRate {
+        if (!rate.isValid()) throw InvalidParkingRateException()
+
         val daysOfWeek: List<DayOfWeek> = rate.weekDays?.map { it.day } ?: listOf()
 
         val doesOverlap: Boolean = daysOfWeek
@@ -18,7 +22,7 @@ class ParkingRateService(
                 parkingRateRepository.findByWeekDaysDay(it)
             }
             .any {
-                it.isOverlappingWith(rate) == true
+                it.isOverlappingTimeWith(rate)
             }
 
         return if (!doesOverlap) {
@@ -28,37 +32,44 @@ class ParkingRateService(
                 }
             })
         } else {
-            throw ParkingRateOverlapsWithExistingRate()
+            throw ParkingRateOverlapsWithExistingRateException()
         }
     }
 
-    fun getAllRates(): List<ParkingRate> {
-        return parkingRateRepository.findAll()
-    }
+    fun getAllRates(): List<ParkingRate> = parkingRateRepository.findAll()
 
     fun getById(id: Long): ParkingRate? = parkingRateRepository.findById(id).orElse(null)
 
     fun deleteById(id: Long) = parkingRateRepository.deleteById(id)
 
-    fun getByDayOfWeek(day: DayOfWeek): List<ParkingRate> {
-        return parkingRateRepository.findByWeekDaysDay(day)
-    }
+    fun getByDayOfWeek(day: DayOfWeek): List<ParkingRate> = parkingRateRepository.findByWeekDaysDay(day)
 
-    fun calculateRate(startTime: ZonedDateTime, endTime: ZonedDateTime): List<ParkingRate> {
+    fun calculateRate(startTime: OffsetDateTime, endTime: OffsetDateTime): ParkingRate? {
+//        val startTime = ZonedDateTime.parse(start)
+//        val endTime = ZonedDateTime.parse(end)
+
         if (startTime.year != endTime.year ||
             startTime.dayOfYear != endTime.dayOfYear ||
             startTime.isAfter(endTime)
         ) {
-            return listOf()
+            return null
         }
 
         val dayOfWeek = startTime.dayOfWeek
-        return parkingRateRepository.findByWeekDaysDay(dayOfWeek)
-            .filter {
-                it.isWithinRateWindow(startTime.toLocalTime(), endTime.toLocalTime())
-            }
+        return try {
+            parkingRateRepository.findByWeekDaysDay(dayOfWeek)
+                .single {
+                    it.isWithinRateWindow(startTime.toOffsetTime(), endTime.toOffsetTime())
+                }
+        } catch (e: NoSuchElementException) {
+            null
+        } catch (e: IllegalArgumentException) {
+            null
+        }
     }
 }
 
 class ParkingRateNotFoundException(message: String = "Rate not found"): Exception(message)
-class ParkingRateOverlapsWithExistingRate(message: String = "Rate overlaps with existing rate"): Exception(message)
+class ParkingRateOverlapsWithExistingRateException(message: String = "Rate overlaps with existing rate"): Exception(message)
+class InvalidParkingRateException(message: String = "Invalid rate"): Exception(message)
+class NoRateFoundException(message: String): Exception(message)

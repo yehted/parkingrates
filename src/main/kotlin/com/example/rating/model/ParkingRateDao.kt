@@ -1,9 +1,7 @@
 package com.example.rating.model
 
 import com.example.rating.repository.InvalidDayOfWeekException
-import java.time.DayOfWeek
-import java.time.LocalTime
-import java.time.ZoneId
+import java.time.*
 
 data class ParkingRateDao(
     val days: String,
@@ -31,10 +29,11 @@ data class ParkingRateDao(
                 day = DAY_OF_WEEK_MAP[it] ?: throw InvalidDayOfWeekException()
             )
         }
+
+        val timeZone: ZoneOffset = ZoneId.of(tz).rules.getOffset(Instant.now())
         return ParkingRate(
-            startTime = LocalTime.of(times.first().slice(0..1).toInt(), times.first().slice(2..3).toInt(), 0),
-            endTime = LocalTime.of(times.last().slice(0..1).toInt(), times.last().slice(2..3).toInt(), 0),
-            timeZone = ZoneId.of(tz),
+            startTime = OffsetTime.of(times.first().slice(0..1).toInt(), times.first().slice(2..3).toInt(), 0, 0, timeZone),
+            endTime = OffsetTime.of(times.last().slice(0..1).toInt(), times.last().slice(2..3).toInt(), 0, 0, timeZone),
             price = price,
             weekDays = weekDays
         )
