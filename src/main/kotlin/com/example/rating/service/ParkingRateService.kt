@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service
 import java.lang.IllegalArgumentException
 import java.time.DayOfWeek
 import java.time.OffsetDateTime
-import java.time.ZonedDateTime
 
 @Service
 class ParkingRateService(
@@ -45,9 +44,6 @@ class ParkingRateService(
     fun getByDayOfWeek(day: DayOfWeek): List<ParkingRate> = parkingRateRepository.findByWeekDaysDay(day)
 
     fun calculateRate(startTime: OffsetDateTime, endTime: OffsetDateTime): ParkingRate? {
-//        val startTime = ZonedDateTime.parse(start)
-//        val endTime = ZonedDateTime.parse(end)
-
         if (startTime.year != endTime.year ||
             startTime.dayOfYear != endTime.dayOfYear ||
             startTime.isAfter(endTime)
@@ -72,4 +68,3 @@ class ParkingRateService(
 class ParkingRateNotFoundException(message: String = "Rate not found"): Exception(message)
 class ParkingRateOverlapsWithExistingRateException(message: String = "Rate overlaps with existing rate"): Exception(message)
 class InvalidParkingRateException(message: String = "Invalid rate"): Exception(message)
-class NoRateFoundException(message: String): Exception(message)
