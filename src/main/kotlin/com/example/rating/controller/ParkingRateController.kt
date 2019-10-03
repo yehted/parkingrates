@@ -25,9 +25,9 @@ class ParkingRateController(
     }
 
     @GetMapping("/dayOfWeek/{day}")
-    fun getByDayOfWeek(@PathVariable day: String): ResponseEntity<List<ParkingRate>> {
+    fun getByDayOfWeek(@PathVariable day: DayOfWeek): ResponseEntity<List<ParkingRate>> {
         return ResponseEntity(
-            parkingRateService.getByDayOfWeek(DayOfWeek.valueOf(day)),
+            parkingRateService.getByDayOfWeek(day),
             HttpStatus.OK
         )
     }
