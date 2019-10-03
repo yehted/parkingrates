@@ -8,8 +8,7 @@ import org.springframework.boot.ApplicationRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
-import org.springframework.util.ResourceUtils
-import java.io.File
+import org.springframework.core.io.ClassPathResource
 
 @SpringBootApplication
 class RatingApplication(
@@ -19,8 +18,8 @@ class RatingApplication(
 	@Bean
 	fun init(repository: RateRepository) = ApplicationRunner {
 
-		val file: File = ResourceUtils.getFile("classpath:rates.json")
-		val rateFile = objectMapper.readValue<RateFile>(file)
+        val resource = ClassPathResource("rates.json").inputStream
+		val rateFile = objectMapper.readValue<RateFile>(resource)
         rateFile.rates.map { dao ->
 			repository.save(dao.toEntity().apply {
 				this.weekDays?.forEach {
